@@ -128,6 +128,16 @@ def execution_node(state: ThursianState) -> Dict[str, Any]:
 
         # Create task file
         task_file_path = os.path.join(state['thursian_dir'], 'tasks', f'{task_id}.md')
+
+        # If task file already exists (from previous loop iteration), just wait
+        if os.path.exists(task_file_path):
+            output_file_path = os.path.join(state['thursian_dir'], 'output', f'{task_id}_output.md')
+            return {
+                'task_file_path': task_file_path,
+                'output_file_path': output_file_path,
+                'waiting_for_human': True
+            }
+
         os.makedirs(os.path.dirname(task_file_path), exist_ok=True)
 
         task_content = f"""# Task: {task_id}
@@ -230,6 +240,18 @@ def validation_node(state: ThursianState) -> Dict[str, Any]:
             'tasks',
             f'{task_id}_validation.md'
         )
+
+        # If validation task file already exists (from previous loop iteration), just wait
+        if os.path.exists(validation_task_file):
+            validation_file_path = os.path.join(
+                state['thursian_dir'],
+                'output',
+                f'{task_id}_validation.md'
+            )
+            return {
+                'validation_file_path': validation_file_path,
+                'waiting_for_human': True
+            }
 
         os.makedirs(os.path.dirname(validation_task_file), exist_ok=True)
 
