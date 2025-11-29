@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.thursian/tasks/*.md
+.thursian/output/*.md
+.thursian/decisions/*.json
+.thursian/status.json
+!.thursian/**/.gitkeep
+.vscode/
+.idea/
