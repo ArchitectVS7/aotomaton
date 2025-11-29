@@ -1,6 +1,3 @@
-Great question — and it’s the right time to ask it.
-You’re transitioning from:
-
 Phase 1
 
 ➡ Markdown-based human agents driven by Claude Desktop
@@ -217,15 +214,3 @@ They are functional state-machine components.
 Markdown is just the blueprint the agent uses.
 
 ⸻
-
-⭐ If you want, I can generate:
-
-🔧 A “LangGraph Agent Template” (.py)
-
-🔧 A converter that converts .md agent protocols → system prompts
-
-🔧 A full dual-mode agent system (human agents + LLM agents)
-
-🔧 The Phase 2 migration plan (Markdown → LangGraph Agents → API Agents → Multi-Agent Swarms)
-
-Just tell me which deliverable you want.
