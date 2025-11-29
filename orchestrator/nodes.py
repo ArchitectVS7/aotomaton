@@ -231,6 +231,8 @@ def validation_node(state: ThursianState) -> Dict[str, Any]:
             f'{task_id}_validation.md'
         )
 
+        os.makedirs(os.path.dirname(validation_task_file), exist_ok=True)
+
         validation_content = f"""# Validation Task: {task_id}
 
 ## Primary Output to Review
@@ -264,8 +266,8 @@ Format:
 
 ## Findings
 
-- ✅ [What's good]
-- ⚠️ [What needs attention]
+- [OK] [What's good]
+- [!] [What needs attention]
 
 ## Recommendation
 
@@ -357,7 +359,7 @@ def completion_node(state: ThursianState) -> Dict[str, Any]:
         print(f"\n{'='*60}")
         print(f"WORKFLOW COMPLETE: {state['workflow_id']}")
         print(f"Task ID: {state['current_task_id']}")
-        print(f"Status: ✅ Approved")
+        print(f"Status: [OK] Approved")
         print(f"{'='*60}\n")
 
         return result
