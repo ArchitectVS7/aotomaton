@@ -56,7 +56,7 @@ def run_workflow(thursian_dir: str = ".thursian", poll_interval: int = 5) -> Non
         workflow = create_thursian_workflow()
     except Exception as e:
         logger.error(f"Failed to create workflow graph: {e}")
-        print(f"\n❌ Error: Failed to create workflow graph: {e}")
+        print(f"\n[X] Error: Failed to create workflow graph: {e}")
         sys.exit(1)
 
     # Main execution loop with polling
@@ -69,8 +69,11 @@ def run_workflow(thursian_dir: str = ".thursian", poll_interval: int = 5) -> Non
         iteration_count += 1
 
         try:
-            # Invoke workflow (single step)
-            current_state = workflow.invoke(current_state)
+            # Invoke workflow (single step) with increased recursion limit for polling loops
+            current_state = workflow.invoke(
+                current_state,
+                config={"recursion_limit": 1000}
+            )
 
             # Update status file
             update_status_file(current_state)
@@ -78,8 +81,8 @@ def run_workflow(thursian_dir: str = ".thursian", poll_interval: int = 5) -> Non
             # Check if phase changed
             if current_state['current_phase'] != last_phase:
                 phase_name = current_state['current_phase'].value
-                print(f"\n📍 Phase: {phase_name}")
-                logger.info(f"Phase transition: {last_phase} → {phase_name}")
+                print(f"\n[>] Phase: {phase_name}")
+                logger.info(f"Phase transition: {last_phase} -> {phase_name}")
 
                 # Git commit for phase transition
                 commit_phase(phase_name, current_state.get('current_task_id'))
@@ -89,40 +92,40 @@ def run_workflow(thursian_dir: str = ".thursian", poll_interval: int = 5) -> Non
             # If waiting for human, poll
             if current_state.get('waiting_for_human'):
                 phase = current_state['current_phase'].value
-                print(f"⏳ Waiting for human to complete {phase}... (checking every {poll_interval}s)")
+                print(f"[...] Waiting for human to complete {phase}... (checking every {poll_interval}s)")
                 time.sleep(poll_interval)
 
             # Check for errors
             if current_state.get('errors'):
                 error_msg = current_state['errors'][-1]
                 logger.error(f"Workflow error: {error_msg}")
-                print(f"\n❌ Error: {error_msg}")
+                print(f"\n[X] Error: {error_msg}")
                 break
 
         except KeyboardInterrupt:
-            print("\n\n⚠️  Workflow interrupted by user")
+            print("\n\n[!] Workflow interrupted by user")
             logger.info("Workflow interrupted by user")
             break
 
         except Exception as e:
             logger.error(f"Workflow execution error: {e}", exc_info=True)
-            print(f"\n❌ Error: Workflow execution failed: {e}")
+            print(f"\n[X] Error: Workflow execution failed: {e}")
             break
 
     # Final status
     if current_state['current_phase'] == WorkflowPhase.COMPLETED:
         print("\n" + "="*60)
-        print("✅ WORKFLOW COMPLETED SUCCESSFULLY")
+        print("[OK] WORKFLOW COMPLETED SUCCESSFULLY")
         print(f"Workflow ID: {current_state['workflow_id']}")
         print(f"Task ID: {current_state['current_task_id']}")
         print(f"Iterations: {iteration_count}")
         print("="*60 + "\n")
         logger.info(f"Workflow completed: {current_state['workflow_id']}")
     elif iteration_count >= max_iterations:
-        print(f"\n⚠️  Warning: Workflow exceeded max iterations ({max_iterations})")
+        print(f"\n[!] Warning: Workflow exceeded max iterations ({max_iterations})")
         logger.warning(f"Workflow exceeded max iterations: {max_iterations}")
     else:
-        print("\n⚠️  Workflow stopped before completion")
+        print("\n[!] Workflow stopped before completion")
         logger.warning("Workflow stopped before completion")
 
     # Summary

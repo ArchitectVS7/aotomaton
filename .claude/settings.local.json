@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C C:/dev/GIT/automaton status)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
